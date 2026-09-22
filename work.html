@@ -143,5 +143,15 @@ src="https://www.facebook.com/tr?id=1360784305839886&ev=PageView&noscript=1"
 <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script src="main.js"></script>
 <script src="booking.js"></script>
+<script>
+  // Meta Pixel: Book a Call (and other #contact) button clicks
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('a[href="#contact"]');
+    if (!btn || typeof fbq !== 'function') return;
+    fbq('trackCustom', 'BookCallClick', {
+      button_text: btn.textContent.trim()
+    });
+  });
+</script>
 </body>
 </html>

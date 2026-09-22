@@ -305,6 +305,9 @@
       try { const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) }); ok = r.ok; } catch (e) { ok = false; }
     }
     if (!ok) location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent('Book a call — ' + payload.name + ' (' + ([].concat(answers.service || []).join(' + ') || 'new lead') + ')')}&body=${encodeURIComponent(text)}`;
+    // Meta Pixel: fires here, not on a native form "submit" event — this flow never
+    // dispatches one (Enter is intercepted and the button is outside the <form>)
+    if (typeof fbq === 'function') fbq('track', 'Lead');
     done = true; render(1);
   }
 
