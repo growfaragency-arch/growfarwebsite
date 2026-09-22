@@ -305,8 +305,10 @@
       try { const r = await fetch(CONFIG.endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(payload) }); ok = r.ok; } catch (e) { ok = false; }
     }
     if (!ok) location.href = `mailto:${CONFIG.email}?subject=${encodeURIComponent('Book a call — ' + payload.name + ' (' + ([].concat(answers.service || []).join(' + ') || 'new lead') + ')')}&body=${encodeURIComponent(text)}`;
-    // Meta Pixel: fires here, not on a native form "submit" event — this flow never
-    // dispatches one (Enter is intercepted and the button is outside the <form>)
+    // Meta Pixel — Lead: only reachable when CONFIG.calendlyUrl is cleared, since that's
+    // the only time this built-in form (rather than Calendly) is what actually gets
+    // submitted. Fires once, after the POST/mailto above, never on validation failure
+    // (the `if (bad) return;` earlier exits before reaching here).
     if (typeof fbq === 'function') fbq('track', 'Lead');
     done = true; render(1);
   }
@@ -334,6 +336,12 @@
   addEventListener('message', e => {
     if (e.origin !== 'https://calendly.com' || !e.data || e.data.event !== 'calendly.event_scheduled') return;
     if (!root.classList.contains('open')) return;
+    // Meta Pixel — Schedule: this is the actual "booked" moment for the live flow
+    // (CONFIG.calendlyUrl is set, so every real booking goes through Calendly's embed,
+    // not the built-in form above). The origin + event-name check means this can only
+    // come from Calendly confirming a real booking, never from clicking Next/Back.
+    // `!booked` stops a duplicate postMessage from firing it twice.
+    if (!booked && typeof fbq === 'function') fbq('track', 'Schedule');
     done = true; booked = true; render(1);
   });
 
