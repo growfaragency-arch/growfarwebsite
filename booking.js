@@ -216,7 +216,7 @@
     // about to be shown. `leadSent` makes this fire once per popup session — it's
     // reset only in open() when a finished/closed session is reopened, so re-renders
     // of this same step (e.g. going back into details) never fire it again.
-    if (!leadSent && typeof fbq === 'function') { fbq('track', 'Lead'); leadSent = true; }
+    if (!leadSent && typeof fbq === 'function') { fbq('track', 'Lead'); leadSent = true; console.log('Lead fired'); }
     const chips = visible().flatMap(q => [].concat(answers[q.id] || [])).map(v => `<span class="bk-chip">${esc(v)}</span>`).join('');
     const u = new URL(CONFIG.calendlyUrl);
     const P = { embed_domain: location.hostname || 'localhost', embed_type: 'Inline', hide_gdpr_banner: '1', hide_event_type_details: '1', primary_color: 'ff154e', text_color: '201c1d', background_color: 'ffffff' };
