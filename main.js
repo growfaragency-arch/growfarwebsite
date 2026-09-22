@@ -112,7 +112,14 @@
       const t = id === '#top' ? 0 : document.querySelector(id);
       if (t === null) return;
       e.preventDefault();
+      const before = scrollY;
       lenis.scrollTo(t, { offset: id === '#top' ? 0 : -70, duration: 1.6, easing: x => 1 - Math.pow(1 - x, 4) });
+      // safety net: if Lenis's animated scroll never actually moves the page (e.g. its
+      // driving rAF loop got stalled by something elsewhere on the page), fall back to a
+      // plain native scroll so the link still works instead of silently doing nothing
+      setTimeout(() => {
+        if (Math.abs(scrollY - before) < 2) (id === '#top' ? scrollTo({ top: 0, behavior: 'smooth' }) : t.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      }, 450);
     }));
   }
 
@@ -175,19 +182,22 @@
     const key = new THREE.DirectionalLight(0xffffff, .72); key.position.set(4, 7, 6); scene.add(key);
     const rim = new THREE.DirectionalLight(0xeca8b8, .55); rim.position.set(-6, 2, -4); scene.add(rim);
     const update = build(scene, camera);
-    const s = { vis: false, canvas, render(t) {
+    const s = { vis: false, dead: false, canvas, render(t) {
       update(t / 1000);
       renderer.render(scene, camera);
     }};
+    // a lost WebGL context (common with many GPU-heavy tabs open at once) must retire
+    // this one scene, not take down the shared render/scroll loop with it
+    canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); s.dead = true; s.vis = false; }, false);
     const fit = () => {
       const w = canvas.clientWidth || canvas.parentElement.clientWidth, h = canvas.clientHeight || canvas.parentElement.clientHeight;
       renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
     };
     new ResizeObserver(fit).observe(canvas.parentElement); fit();
-    new IntersectionObserver(([e]) => { s.vis = e.isIntersecting; }, { rootMargin: '80px' }).observe(canvas);
+    new IntersectionObserver(([e]) => { if (!s.dead) s.vis = e.isIntersecting; }, { rootMargin: '80px' }).observe(canvas);
     canvas.parentElement.classList.add('gl');
     scenes.push(s);
-    s.render(0);
+    try { s.render(0); } catch (err) { s.dead = true; s.vis = false; }
   }
 
   const bevel = { bevelEnabled: true, bevelSegments: 8, curveSegments: 20 };
@@ -512,11 +522,17 @@
     });
   };
 
-  /* ---------- one shared loop ---------- */
+  /* ---------- one shared loop ----------
+     Guarded per-piece: one bad frame (e.g. a lost WebGL context) must never stop
+     requestAnimationFrame(loop) from being re-scheduled, or the whole page — including
+     Lenis's smooth-scroll, which is driven from here — silently stops responding. */
   const loop = t => {
-    if (lenis) lenis.raf(t);
-    parallax();
-    for (const s of scenes) if (s.vis) s.render(t);
+    try { if (lenis) lenis.raf(t); } catch (err) {}
+    try { parallax(); } catch (err) {}
+    for (const s of scenes) {
+      if (!s.vis || s.dead) continue;
+      try { s.render(t); } catch (err) { s.dead = true; s.vis = false; }
+    }
     requestAnimationFrame(loop);
   };
   requestAnimationFrame(loop);
