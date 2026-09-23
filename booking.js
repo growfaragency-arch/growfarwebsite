@@ -29,13 +29,23 @@
      your own API). The answers are POSTed there as JSON.
    - If endpoint is empty, the visitor's email app opens with everything
      pre-filled to CONFIG.email.
+
+   PEOPLE WHO ANSWER BUT DON'T BOOK (Calendly flow only)
+   - The 5 answers already go to Calendly as prefill (see calendlyPrefill above) —
+     every booking that completes shows them in the Calendly event.
+   - But someone who answers all 5 questions and then closes the tab without
+     finishing the Calendly step leaves no record anywhere. Set CONFIG.sheetEndpoint
+     to a Google Apps Script Web App URL to also log those answers to a Google
+     Sheet at that exact moment (see the setup steps given alongside this change).
+     Leave it '' to skip this.
    ===================================================================== */
 (() => {
   const CONFIG = {
     calendlyUrl: 'https://calendly.com/growfaragency/new-meeting',
     calendlyPrefill: 'summary',
     email: 'growfaragency@gmail.com',
-    endpoint: ''            // e.g. 'https://formspree.io/f/xxxxxxx'
+    endpoint: '',            // e.g. 'https://formspree.io/f/xxxxxxx'
+    sheetEndpoint: ''        // Google Apps Script /exec URL — logs the 5 answers even if they don't book
   };
 
   const ICON = {
@@ -139,7 +149,7 @@
   const $ = q => root.querySelector(q);
   const box = $('.bk-box'), body = $('.bk-body'), count = $('.bk-count'), bar = $('.bk-bar span'), back = $('.bk-back'), next = $('.bk-next'), foot = $('.bk-foot');
 
-  let answers = {}, step = 0, booked = false, lastTrigger = null, done = false, timer = 0, leadSent = false;
+  let answers = {}, step = 0, booked = false, lastTrigger = null, done = false, timer = 0, leadSent = false, sheetSent = false;
   const visible = () => QUESTIONS.filter(q => !q.showIf || q.showIf(answers));
   const total = () => visible().length + 1;      // + details step
   const isDetails = () => step >= visible().length;
@@ -217,6 +227,19 @@
     // reset only in open() when a finished/closed session is reopened, so re-renders
     // of this same step (e.g. going back into details) never fire it again.
     if (!leadSent && typeof fbq === 'function') { fbq('track', 'Lead'); leadSent = true; console.log('Lead fired'); }
+    // Google Sheet log — same moment as the Lead pixel: the 5 answers are final and
+    // about to be handed to Calendly, so this is the one place that catches everyone
+    // who answered, including people who never finish the Calendly step below.
+    // Fire-and-forget: mode 'no-cors' + a text/plain body avoid a CORS preflight,
+    // which Apps Script web apps don't answer, so this never blocks or breaks the UI.
+    if (!sheetSent && CONFIG.sheetEndpoint) {
+      sheetSent = true;
+      const rows = Object.fromEntries(summary().map(s => [s.q, s.a]));
+      fetch(CONFIG.sheetEndpoint, {
+        method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ ...rows, page: location.href, submittedAt: new Date().toISOString() })
+      }).catch(() => {});
+    }
     const chips = visible().flatMap(q => [].concat(answers[q.id] || [])).map(v => `<span class="bk-chip">${esc(v)}</span>`).join('');
     const u = new URL(CONFIG.calendlyUrl);
     const P = { embed_domain: location.hostname || 'localhost', embed_type: 'Inline', hide_gdpr_banner: '1', hide_event_type_details: '1', primary_color: 'ff154e', text_color: '201c1d', background_color: 'ffffff' };
@@ -329,7 +352,7 @@
 
   function open(trigger) {
     lastTrigger = trigger || document.activeElement;
-    if (done) { answers = {}; done = false; booked = false; step = 0; leadSent = false; }
+    if (done) { answers = {}; done = false; booked = false; step = 0; leadSent = false; sheetSent = false; }
     root.classList.add('open'); document.body.style.overflow = 'hidden'; window.__lenis?.stop();
     render(1);
   }

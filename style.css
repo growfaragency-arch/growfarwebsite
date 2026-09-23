@@ -1153,3 +1153,9 @@ a,button,.step,.bk-opt,.vt{-webkit-tap-highlight-color:transparent}
 .foot-social a svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}
 .foot-social a:hover{color:var(--green-d)}
 @media (max-width:720px){.foot-social{order:2}}
+
+/* Book-a-call landing page (ads destination) — same brand shell, no nav/animation deps */
+.lp-center{max-width:600px;margin-inline:auto;text-align:center}
+.lp-center p.lead{margin:1rem auto 2rem;max-width:44ch}
+.lp-foot{padding:28px 0;border-top:1px solid var(--line)}
+.lp-foot .wrap{display:flex;align-items:center;justify-content:center;gap:.8rem;color:var(--muted);font-size:.78rem}

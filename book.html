@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Book a Call — Growfar</title>
+<meta name="description" content="Answer five quick questions and book a free call with Growfar. Your custom quote is ready before we talk.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css">
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1360784305839886');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1360784305839886&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+</head>
+<body>
+
+<header>
+  <div class="wrap nav" style="justify-content:center">
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="Growfar" width="54" height="54"></a>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <div class="wrap lp-center">
+      <span class="pill-tag">Free strategy call</span>
+      <h1>Let's plan your content.</h1>
+      <p class="lead">Answer five quick questions, pick a time that suits you, and your custom quote will be ready before we talk.</p>
+      <a href="#contact" data-book class="btn btn-fill">Book a Call</a>
+    </div>
+  </div>
+</main>
+
+<footer class="lp-foot">
+  <div class="wrap">
+    <a href="index.html" class="logo"><img src="assets/logo.svg" alt="Growfar" width="36" height="36"></a>
+    <span>© 2026 Growfar. All rights reserved.</span>
+  </div>
+</footer>
+
+<script src="booking.js"></script>
+<script>
+  // Meta Pixel: Book a Call (and other #contact) button clicks
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('a[href="#contact"]');
+    if (!btn || typeof fbq !== 'function') return;
+    fbq('trackCustom', 'BookCallClick', {
+      button_text: btn.textContent.trim()
+    });
+  });
+  // This page exists as an ad destination: open the form straight away so the
+  // click lands directly on question 1, no extra "Book a Call" click needed.
+  window.addEventListener('load', function () {
+    window.GFBooking && window.GFBooking.open();
+  });
+</script>
+</body>
+</html>
