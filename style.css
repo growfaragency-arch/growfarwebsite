@@ -1155,12 +1155,17 @@ a,button,.step,.bk-opt,.vt{-webkit-tap-highlight-color:transparent}
 @media (max-width:720px){.foot-social{order:2}}
 
 /* Book-a-call landing page (ads destination) — same brand shell, no nav/animation deps */
+/* header is static here (not fixed/scroll-hiding, since there's no scroll JS on this
+   page) so a taller header on small screens never overlaps the hero below it */
+.lp-body header{position:static;background:var(--bg)}
+.lp-body .hero{padding-top:70px}
 .lp-center{max-width:600px;margin-inline:auto;text-align:center}
 .lp-center p.lead{margin:1rem auto 2rem;max-width:44ch}
 .lp-trust{justify-content:center;margin-top:1.8rem}
 .lp-head{flex-wrap:wrap;row-gap:.8rem}
-.lp-nav-link{font-size:.86rem;color:#564c4e;margin-left:auto;margin-right:1.2rem;transition:color .3s;white-space:nowrap}
-.lp-nav-link:hover{color:var(--green-d)}
+.lp-menu{display:flex;flex-wrap:wrap;gap:1.6rem;font-size:.86rem;color:#564c4e;margin-left:auto;margin-right:1.4rem}
+.lp-menu a{transition:color .3s;white-space:nowrap}
+.lp-menu a:hover{color:var(--green-d)}
 
 .lp-stats-sec{padding:56px 0 0}
 .lp-stats{grid-template-columns:repeat(3,1fr);gap:1rem;max-width:640px;margin-inline:auto}
@@ -1180,8 +1185,9 @@ a,button,.step,.bk-opt,.vt{-webkit-tap-highlight-color:transparent}
 
 @media (max-width:720px){
   .lp-head{justify-content:center}
-  .lp-nav-link{margin:0;order:2}
-  .lp-head .btn{order:3}
+  .lp-head .logo{flex:0 0 100%;justify-content:center;display:flex}
+  .lp-menu{margin:0;justify-content:center;order:2;flex:0 0 100%}
+  .lp-head .btn{order:3;margin-inline:auto}
   .lp-stats{grid-template-columns:1fr}
   .lp-why-grid{grid-template-columns:1fr}
 }
