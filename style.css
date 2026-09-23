@@ -1157,5 +1157,31 @@ a,button,.step,.bk-opt,.vt{-webkit-tap-highlight-color:transparent}
 /* Book-a-call landing page (ads destination) — same brand shell, no nav/animation deps */
 .lp-center{max-width:600px;margin-inline:auto;text-align:center}
 .lp-center p.lead{margin:1rem auto 2rem;max-width:44ch}
-.lp-foot{padding:28px 0;border-top:1px solid var(--line)}
-.lp-foot .wrap{display:flex;align-items:center;justify-content:center;gap:.8rem;color:var(--muted);font-size:.78rem}
+.lp-trust{justify-content:center;margin-top:1.8rem}
+.lp-head{flex-wrap:wrap;row-gap:.8rem}
+.lp-nav-link{font-size:.86rem;color:#564c4e;margin-left:auto;margin-right:1.2rem;transition:color .3s;white-space:nowrap}
+.lp-nav-link:hover{color:var(--green-d)}
+
+.lp-stats-sec{padding:56px 0 0}
+.lp-stats{grid-template-columns:repeat(3,1fr);gap:1rem;max-width:640px;margin-inline:auto}
+.lp-stats .stat{grid-template-columns:1fr;justify-items:center;text-align:center;row-gap:.3rem;padding:22px 10px;background:var(--tint);border-radius:20px}
+.lp-stats .stat svg{width:22px;height:22px;fill:none;stroke:var(--green-d);stroke-width:1.7}
+.lp-stats .stat b{font-family:var(--serif);font-size:1.5rem;font-weight:500}
+.lp-stats .stat span{font-size:.74rem;color:var(--muted)}
+
+.lp-why{padding:70px 0}
+.lp-why-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:2.5rem;align-items:start}
+.lp-why-grid h2{margin-top:.6rem}
+.lp-edits-card{background:var(--tint);border-radius:28px;padding:36px 30px;align-self:stretch;display:flex;flex-direction:column;justify-content:center}
+.lp-edits-card h3{font-family:var(--serif);font-weight:500;font-size:1.4rem;margin-bottom:.6rem}
+.lp-edits-card p{color:var(--muted);font-size:.88rem;margin-bottom:1.4rem}
+
+.lp-cta{padding-bottom:70px}
+
+@media (max-width:720px){
+  .lp-head{justify-content:center}
+  .lp-nav-link{margin:0;order:2}
+  .lp-head .btn{order:3}
+  .lp-stats{grid-template-columns:1fr}
+  .lp-why-grid{grid-template-columns:1fr}
+}
